@@ -361,7 +361,7 @@ Accept: application/json</pre>
             <button class="sim-send" id="sim-send" type="button">Gửi request ▶</button>
           </div>
           <div class="sim-controls">
-            <div class="sim-field"><label for="sim-student">Thành viên nhóm</label><select class="sim-select" id="sim-student"><option value="SS180069">Đặng Thành Hưng · SS180069 · Leader</option><option value="SE182422">Văn Châu Trường Thuận · SE182422</option><option value="SE182173">Nguyễn Bình Minh · SE182173</option><option value="SE182141">Võ Nhật Thiên · SE182141</option></select></div>
+            <div class="sim-field"><label for="sim-student">Thành viên nhóm</label><select class="sim-select" id="sim-student"><option value="SS180069">Đặng Thành Hưng · SS180069 · Leader</option><option value="SE182422">Văn Châu Trường Thuận · SE182422</option><option value="SE182173">Nguyễn Bình Minh · SE182173 · Không có quyền</option><option value="SE182141">Võ Nhật Thiên · SE182141 · Không tồn tại</option></select></div>
             <div class="sim-field"><label for="sim-term">Học kỳ</label><select class="sim-select" id="sim-term"><option value="FA26">FA26 · Fall 2026</option><option value="SP26">SP26 · Spring 2026</option></select></div>
             <div class="sim-field"><label for="sim-etag">Header If-None-Match (ETag)</label><select class="sim-select" id="sim-etag"><option value="">Không gửi · mong đợi 200 OK</option><option value="current">ETag hiện tại · nhận 304 Not Modified</option><option value="stale">ETag cũ · nhận 200 OK</option></select></div>
           </div>
@@ -608,7 +608,15 @@ Accept: application/json</pre>
       let statusClass = 'ok';
       let response = '';
       let note = '';
-      if (etagMode === 'current') {
+      if (studentId === 'SE182173') {
+        statusText = '403 Forbidden · 18 ms'; statusClass = 'error';
+        response = JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền xem enrollment của Nguyễn Bình Minh.', requestId: 'req_7f4c1a' } }, null, 2);
+        note = '<b>403 Forbidden:</b> token hợp lệ nhưng policy/RBAC không cho phép truy cập resource. Server không trả dữ liệu enrollment.';
+      } else if (studentId === 'SE182141') {
+        statusText = '404 Not Found · 21 ms'; statusClass = 'error';
+        response = JSON.stringify({ error: { code: 'STUDENT_NOT_FOUND', message: 'Không tìm thấy resource của Võ Nhật Thiên.', requestId: 'req_2bd934' } }, null, 2);
+        note = '<b>404 Not Found:</b> URI hợp lệ nhưng resource không tồn tại. Client dựa vào status code để hiển thị trạng thái phù hợp.';
+      } else if (etagMode === 'current') {
         statusText = '304 Not Modified · 12 ms'; statusClass = 'not-modified';
         response = `HTTP/1.1 304 Not Modified\nETag: ${simVersion}\nCache-Control: private, max-age=60\n\n# Không có response body. Client dùng bản cache sẵn có.`;
         note = '<b>304 Not Modified:</b> ETag client gửi khớp version trên server; body được bỏ qua, tiết kiệm băng thông và thời gian xử lý.';
