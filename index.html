@@ -152,6 +152,12 @@
     .method-panel { min-height: 350px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); box-shadow: var(--shadow); }.method-panel h3 { margin: 0 0 5px; font-size: 24px; letter-spacing: -.035em; }.method-panel > p { margin: 0 0 18px; color: var(--muted); }
     .method-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }.method-meta span { padding: 4px 8px; color: #31506f; background: #edf4fb; border-radius: 7px; font-size: 12px; font-weight: 700; }
 
+    .simulator { overflow: hidden; border: 1px solid #cad9ea; border-radius: var(--radius); background: var(--white); box-shadow: var(--shadow); }
+    .sim-top { padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; gap: 18px; color: white; background: linear-gradient(120deg, #102a4b, #1e5baa); }.sim-top h3 { margin: 0; font-size: 22px; letter-spacing: -.03em; }.sim-top p { margin: 3px 0 0; color: #c8dcf8; font-size: 13px; }.sim-live { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; color: #d8fff3; white-space: nowrap; border: 1px solid rgba(216,255,243,.3); border-radius: 99px; font-size: 11px; font-weight: 800; }.sim-live i { width: 7px; height: 7px; display: block; border-radius: 50%; background: #2ee6a6; box-shadow: 0 0 0 4px rgba(46,230,166,.16); }
+    .sim-body { padding: 26px 28px 29px; }.sim-toolbar { display: grid; grid-template-columns: 120px 1fr auto; gap: 9px; }.sim-method { display: grid; place-items: center; color: white; background: #117c79; border-radius: 10px; font-size: 13px; font-weight: 900; letter-spacing: .04em; }.sim-url, .sim-select { width: 100%; min-height: 43px; padding: 0 12px; color: #263b56; font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #f8fbff; border: 1px solid #cbd9e9; border-radius: 10px; }.sim-select { font-family: inherit; cursor: pointer; }.sim-send { cursor: pointer; min-height: 43px; padding: 0 17px; color: white; font: inherit; font-size: 13px; font-weight: 800; background: var(--blue); border: 0; border-radius: 10px; box-shadow: 0 7px 15px rgba(37,99,235,.22); }.sim-send:disabled { cursor: wait; opacity: .72; }
+    .sim-controls { display: grid; grid-template-columns: 1fr 1fr 1.22fr; gap: 13px; margin-top: 17px; }.sim-field label { display: block; margin-bottom: 5px; color: #506682; font-size: 12px; font-weight: 800; }.sim-field select { min-height: 40px; }
+    .sim-result-grid { display: grid; grid-template-columns: .95fr 1.05fr; gap: 15px; margin-top: 22px; }.sim-pane { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: #fbfdff; }.pane-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 13px; color: #40536d; border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }.response-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 7px; border-radius: 7px; font-size: 11px; letter-spacing: 0; }.response-status.ok { color: #096e52; background: #dff8ee; }.response-status.not-modified { color: #9a5a00; background: #fff3d5; }.response-status.error { color: #a51f32; background: #ffe7e9; }.sim-pane pre { min-height: 216px; margin: 0; padding: 15px; overflow: auto; border-radius: 0; font-size: 12px; }.sim-note { margin: 16px 0 0; padding: 12px 13px; color: #52657e; border-left: 3px solid var(--cyan); border-radius: 0 10px 10px 0; background: #eefaff; font-size: 12px; }.sim-note b { color: #17476d; }
+
     .diagram-wrap { padding: 30px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: radial-gradient(circle at 11% 15%, #e8f7ff 0, rgba(232,247,255,0) 30%), var(--white); box-shadow: var(--shadow); }
     .architecture-diagram { position: relative; display: grid; grid-template-columns: 1fr 46px 1fr 46px 1fr 46px 1fr; align-items: center; min-width: 830px; }
     .diagram-box { position: relative; z-index: 1; min-height: 145px; padding: 20px 16px; display: grid; align-content: center; border: 1px solid #ccdbea; border-radius: 16px; text-align: center; background: white; box-shadow: 0 9px 20px rgba(42,74,112,.07); }
@@ -169,8 +175,8 @@
     .ref-number { flex: 0 0 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: white; background: var(--navy); font-size: 12px; font-weight: 850; }.reference b { display: block; font-size: 14px; }.reference span { display: block; color: var(--muted); font-size: 12px; }
     footer { padding: 26px 0 34px; color: #738299; background: #edf2f8; font-size: 13px; }.footer-content { display: flex; justify-content: space-between; gap: 20px; }.footer-content strong { color: #32455f; }
 
-    @media (max-width: 900px) { .hero-grid, .decision, .demo-grid, .detail-inner, .methods-layout { grid-template-columns: 1fr; }.hero-art { display: none; }.architecture-cards { grid-template-columns: repeat(2, 1fr); }.decision-banner { padding: 31px; }.architecture-diagram { min-width: 760px; }.diagram-wrap { overflow-x: auto; }.nav-links a:nth-child(n+3) { display: none; } }
-    @media (max-width: 610px) { .container { width: min(100% - 30px, 1160px); }.nav { min-height: 59px; }.nav-links a { display: none; }.hero { padding: 57px 0 43px; }.hero p { font-size: 16px; }.architecture-cards, .references, .reasons, .comparison-note { grid-template-columns: 1fr; }.flow { grid-template-columns: 1fr; }.flow-arrow { transform: rotate(90deg); margin: -6px auto; }.flow-step { min-height: 80px; }.flow-step svg { margin-bottom: 2px; }.flow-step span { display: none; }.flow-card, .code-card, .decision-detail, .method-panel, .detail-inner { padding: 23px 19px; } main { padding-top: 43px; }.section { margin-top: 58px; } }
+    @media (max-width: 900px) { .hero-grid, .decision, .demo-grid, .detail-inner, .methods-layout, .sim-result-grid { grid-template-columns: 1fr; }.hero-art { display: none; }.architecture-cards { grid-template-columns: repeat(2, 1fr); }.decision-banner { padding: 31px; }.architecture-diagram { min-width: 760px; }.diagram-wrap { overflow-x: auto; }.nav-links a:nth-child(n+3) { display: none; } }
+    @media (max-width: 610px) { .container { width: min(100% - 30px, 1160px); }.nav { min-height: 59px; }.nav-links a { display: none; }.hero { padding: 57px 0 43px; }.hero p { font-size: 16px; }.architecture-cards, .references, .reasons, .comparison-note, .sim-controls, .sim-toolbar { grid-template-columns: 1fr; }.flow { grid-template-columns: 1fr; }.flow-arrow { transform: rotate(90deg); margin: -6px auto; }.flow-step { min-height: 80px; }.flow-step svg { margin-bottom: 2px; }.flow-step span { display: none; }.flow-card, .code-card, .decision-detail, .method-panel, .detail-inner, .sim-body { padding: 23px 19px; }.sim-top { align-items: flex-start; flex-direction: column; padding: 21px 19px; } main { padding-top: 43px; }.section { margin-top: 58px; } }
   </style>
 </head>
 <body>
@@ -181,6 +187,7 @@
         <a href="#comparison">So sánh</a>
         <a href="#choice">Lựa chọn</a>
         <a href="#methods">HTTP methods</a>
+        <a href="#simulator">REST simulator</a>
         <a href="#demo">Minh hoạ</a>
         <a href="#sources">Nguồn</a>
       </div>
@@ -342,8 +349,34 @@ Accept: application/json</pre>
       </div>
     </section>
 
+    <section id="simulator" class="section" aria-labelledby="simulator-heading">
+      <p class="section-kicker">06 · Trải nghiệm trực tiếp</p>
+      <h2 id="simulator-heading">Trình giả lập REST API tương tác</h2>
+      <p class="lead">Mô phỏng request từ Student Portal đến REST API: thử dữ liệu hợp lệ, ETag cache, lỗi quyền truy cập và resource không tồn tại. Hoàn toàn chạy trong trình duyệt, không gửi dữ liệu ra bên ngoài.</p>
+      <article class="simulator">
+        <div class="sim-top"><div><h3>REST API Playground</h3><p>Student Management System · GET enrollment records</p></div><span class="sim-live"><i></i> Local simulation</span></div>
+        <div class="sim-body">
+          <div class="sim-toolbar">
+            <div class="sim-method">GET</div>
+            <input class="sim-url" id="sim-url" aria-label="API endpoint" value="/api/v1/students/STU-20260021/enrollments?term=FA26" spellcheck="false">
+            <button class="sim-send" id="sim-send" type="button">Gửi request ▶</button>
+          </div>
+          <div class="sim-controls">
+            <div class="sim-field"><label for="sim-student">Mã sinh viên</label><select class="sim-select" id="sim-student"><option value="STU-20260021">STU-20260021 · Nguyễn Minh Anh</option><option value="STU-20260058">STU-20260058 · Trần Gia Hân</option><option value="STU-20260000">STU-20260000 · Không có quyền</option><option value="STU-20269999">STU-20269999 · Không tồn tại</option></select></div>
+            <div class="sim-field"><label for="sim-term">Học kỳ</label><select class="sim-select" id="sim-term"><option value="FA26">FA26 · Fall 2026</option><option value="SP26">SP26 · Spring 2026</option></select></div>
+            <div class="sim-field"><label for="sim-etag">Header If-None-Match (ETag)</label><select class="sim-select" id="sim-etag"><option value="">Không gửi · mong đợi 200 OK</option><option value="current">ETag hiện tại · nhận 304 Not Modified</option><option value="stale">ETag cũ · nhận 200 OK</option></select></div>
+          </div>
+          <div class="sim-result-grid">
+            <div class="sim-pane"><div class="pane-heading"><span>Client request · HTTP/1.1</span></div><pre id="sim-request"></pre></div>
+            <div class="sim-pane"><div class="pane-heading"><span>Server response</span><span class="response-status ok" id="sim-status">200 OK · 28 ms</span></div><pre id="sim-response"></pre></div>
+          </div>
+          <p class="sim-note" id="sim-note"><b>Thử cache:</b> chọn “ETag hiện tại” rồi gửi request. Server nhận ra representation chưa đổi và trả về <b>304 Not Modified</b> không có response body.</p>
+        </div>
+      </article>
+    </section>
+
     <section class="section" aria-labelledby="diagram-heading">
-      <p class="section-kicker">06 · Architecture / communication diagram</p>
+      <p class="section-kicker">07 · Architecture / communication diagram</p>
       <h2 id="diagram-heading">Luồng thành phần cho Student Management System</h2>
       <p class="lead">Sơ đồ tập trung vào đường đi của request REST và các ranh giới trách nhiệm chính.</p>
       <div class="diagram-wrap" role="img" aria-label="Sơ đồ cổng sinh viên gửi HTTPS request tới API gateway, REST API và cơ sở dữ liệu sinh viên">
@@ -363,7 +396,7 @@ Accept: application/json</pre>
     </section>
 
     <section id="sources" class="section" aria-labelledby="sources-heading">
-      <p class="section-kicker">07 · References</p>
+      <p class="section-kicker">08 · References</p>
       <h2 id="sources-heading">Nguồn kỹ thuật chính thức</h2>
       <p class="lead">Các nhận định về protocol, transport, format và interface trong trang được đối chiếu với tài liệu kỹ thuật bên dưới.</p>
       <div class="references">
@@ -511,6 +544,100 @@ Accept: application/json</pre>
     }
     methodTabs.forEach(tab => tab.addEventListener('click', () => showMethod(tab.dataset.method)));
     showMethod('get');
+
+    const simulatorData = {
+      'STU-20260021': {
+        name: 'Nguyễn Minh Anh', gpa: 3.46,
+        FA26: [
+          { subjectCode: 'PRN231', title: 'Advanced Application Programming', credits: 3, grade: 8.4, status: 'PASSED' },
+          { subjectCode: 'SWD392', title: 'Software Design', credits: 3, grade: 7.9, status: 'PASSED' },
+          { subjectCode: 'EXE101', title: 'Experiential Learning', credits: 3, grade: null, status: 'IN_PROGRESS' }
+        ],
+        SP26: [
+          { subjectCode: 'PRF192', title: 'Programming Fundamentals', credits: 3, grade: 8.7, status: 'PASSED' },
+          { subjectCode: 'MAD101', title: 'Discrete Mathematics', credits: 3, grade: 8.1, status: 'PASSED' }
+        ]
+      },
+      'STU-20260058': {
+        name: 'Trần Gia Hân', gpa: 3.62,
+        FA26: [
+          { subjectCode: 'PRN231', title: 'Advanced Application Programming', credits: 3, grade: 9.0, status: 'PASSED' },
+          { subjectCode: 'NWC204', title: 'Network Communication', credits: 3, grade: 8.3, status: 'PASSED' }
+        ],
+        SP26: [
+          { subjectCode: 'CSD201', title: 'Data Structures', credits: 3, grade: 8.8, status: 'PASSED' },
+          { subjectCode: 'OSG202', title: 'Operating Systems', credits: 3, grade: 8.4, status: 'PASSED' }
+        ]
+      }
+    };
+    const simUrl = document.getElementById('sim-url');
+    const simStudent = document.getElementById('sim-student');
+    const simTerm = document.getElementById('sim-term');
+    const simEtag = document.getElementById('sim-etag');
+    const simSend = document.getElementById('sim-send');
+    const simRequest = document.getElementById('sim-request');
+    const simResponse = document.getElementById('sim-response');
+    const simStatus = document.getElementById('sim-status');
+    const simNote = document.getElementById('sim-note');
+    const simVersion = '"enrollments-v26-3f8a"';
+    const refreshSimulatorUrl = () => {
+      simUrl.value = `/api/v1/students/${simStudent.value}/enrollments?term=${simTerm.value}`;
+    };
+    const renderSimulator = () => {
+      const studentId = simStudent.value;
+      const term = simTerm.value;
+      const etagMode = simEtag.value;
+      const record = simulatorData[studentId];
+      const requestEtag = etagMode === 'current' ? simVersion : etagMode === 'stale' ? '"enrollments-v25-c1d4"' : '';
+      simRequest.textContent = `GET ${simUrl.value} HTTP/1.1\nHost: api.university.edu.vn\nAuthorization: Bearer eyJhbGciOi...\nAccept: application/json\nAccept-Encoding: gzip, br${requestEtag ? `\nIf-None-Match: ${requestEtag}` : ''}`;
+      let statusText = '200 OK · 28 ms';
+      let statusClass = 'ok';
+      let response = '';
+      let note = '';
+      if (studentId === 'STU-20260000') {
+        statusText = '403 Forbidden · 18 ms'; statusClass = 'error';
+        response = JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền xem enrollment của sinh viên này.', requestId: 'req_7f4c1a' } }, null, 2);
+        note = '<b>403 Forbidden:</b> token hợp lệ nhưng policy/RBAC không cho phép đọc resource. Server không nên trả dữ liệu enrollment.';
+      } else if (studentId === 'STU-20269999') {
+        statusText = '404 Not Found · 21 ms'; statusClass = 'error';
+        response = JSON.stringify({ error: { code: 'STUDENT_NOT_FOUND', message: 'Không tìm thấy sinh viên STU-20269999.', requestId: 'req_2bd934' } }, null, 2);
+        note = '<b>404 Not Found:</b> URI hợp lệ nhưng resource không tồn tại. API dùng status code để client xử lý trạng thái hiển thị.';
+      } else if (etagMode === 'current') {
+        statusText = '304 Not Modified · 12 ms'; statusClass = 'not-modified';
+        response = `HTTP/1.1 304 Not Modified\nETag: ${simVersion}\nCache-Control: private, max-age=60\n\n# Không có response body. Client dùng bản cache sẵn có.`;
+        note = '<b>304 Not Modified:</b> ETag client gửi khớp version trên server; body được bỏ qua, tiết kiệm băng thông và thời gian xử lý.';
+      } else {
+        const body = {
+          studentCode: studentId,
+          fullName: record.name,
+          term,
+          gpa: record.gpa,
+          enrollments: record[term],
+          _links: { self: simUrl.value, student: `/api/v1/students/${studentId}` }
+        };
+        response = `HTTP/1.1 200 OK\nContent-Type: application/json\nETag: ${simVersion}\nCache-Control: private, max-age=60\n\n${JSON.stringify(body, null, 2)}`;
+        note = etagMode === 'stale'
+          ? `<b>200 OK sau ETag cũ:</b> server phát hiện representation đã thay đổi nên trả JSON mới cùng ETag ${simVersion}.`
+          : '<b>200 OK:</b> server xác thực token, kiểm tra policy, truy vấn enrollment và trả representation JSON kèm ETag để client cache.';
+      }
+      simResponse.textContent = response;
+      simStatus.textContent = statusText;
+      simStatus.className = `response-status ${statusClass}`;
+      simNote.innerHTML = note;
+    };
+    [simStudent, simTerm].forEach(control => control.addEventListener('change', () => { refreshSimulatorUrl(); renderSimulator(); }));
+    simEtag.addEventListener('change', renderSimulator);
+    simSend.addEventListener('click', async () => {
+      simSend.disabled = true;
+      simSend.textContent = 'Đang gửi...';
+      simStatus.textContent = 'Processing...';
+      await new Promise(resolve => setTimeout(resolve, 420));
+      renderSimulator();
+      simSend.disabled = false;
+      simSend.textContent = 'Gửi request ▶';
+    });
+    refreshSimulatorUrl();
+    renderSimulator();
 
     const button = document.getElementById('simulate');
     const status = document.getElementById('flow-status');
