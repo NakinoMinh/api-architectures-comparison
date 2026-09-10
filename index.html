@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="So sánh SOAP, REST, GraphQL và gRPC; lựa chọn REST cho hệ thống quản lý sinh viên.">
+  <title>So sánh kiến trúc API | Team Assignment</title>
+  <style>
+    :root {
+      --ink: #132238;
+      --muted: #61728b;
+      --paper: #f7f9fc;
+      --line: #dce5f0;
+      --white: #ffffff;
+      --navy: #112544;
+      --blue: #2563eb;
+      --cyan: #16b8d4;
+      --teal: #10b981;
+      --gold: #f59e0b;
+      --purple: #8b5cf6;
+      --red: #f05252;
+      --shadow: 0 16px 45px rgba(29, 55, 91, .10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: inherit; }
+    .container { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(247,249,252,.90);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(220,229,240,.85);
+    }
+    .nav { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 850; text-decoration: none; letter-spacing: -.02em; }
+    .brand-mark {
+      width: 32px; height: 32px; display: grid; place-items: center; color: white;
+      border-radius: 10px; background: linear-gradient(135deg, var(--blue), var(--purple));
+      box-shadow: 0 8px 18px rgba(37,99,235,.25);
+    }
+    .nav-links { display: flex; gap: 8px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 650; padding: 7px 10px; border-radius: 9px; }
+    .nav-links a:hover { color: var(--blue); background: #edf4ff; }
+
+    .hero { padding: 70px 0 54px; overflow: hidden; position: relative; background: var(--navy); color: white; }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(1px); opacity: .8; }
+    .hero::before { width: 510px; height: 510px; right: -180px; top: -260px; background: radial-gradient(circle, #3b82f6 0, rgba(59,130,246,0) 68%); }
+    .hero::after { width: 430px; height: 430px; left: -250px; bottom: -270px; background: radial-gradient(circle, #14b8a6 0, rgba(20,184,166,0) 70%); }
+    .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.16fr .84fr; gap: 48px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid rgba(255,255,255,.19); border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: #bde6ff; }
+    h1 { margin: 16px 0; max-width: 750px; font-size: clamp(40px, 5vw, 67px); line-height: 1.03; letter-spacing: -.055em; }
+    .hero p { max-width: 660px; margin: 0; color: #cbd8eb; font-size: 18px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+    .hero-meta span { padding: 7px 11px; border-radius: 8px; background: rgba(255,255,255,.09); color: #e5f1ff; font-size: 13px; }
+    .hero-art { min-height: 290px; position: relative; display: grid; place-items: center; }
+    .api-orbit { width: 245px; aspect-ratio: 1; position: relative; display: grid; place-items: center; border: 1px dashed rgba(169,216,255,.55); border-radius: 50%; }
+    .api-center { width: 112px; height: 112px; border-radius: 27px; display: grid; place-items: center; text-align: center; background: linear-gradient(145deg, #2b76f7, #7d51e8); font-size: 23px; font-weight: 900; letter-spacing: -.05em; box-shadow: 0 18px 35px rgba(0,0,0,.28); }
+    .orbit-node { position: absolute; display: grid; place-items: center; width: 82px; height: 36px; border: 1px solid rgba(255,255,255,.25); border-radius: 10px; background: rgba(17,37,68,.86); color: white; font-size: 12px; font-weight: 800; }
+    .n1 { top: -20px; left: 81px; } .n2 { right: -41px; top: 96px; } .n3 { bottom: -17px; left: 81px; } .n4 { left: -41px; top: 96px; }
+
+    main { padding: 56px 0 80px; }
+    .section { margin-top: 78px; }
+    .section:first-child { margin-top: 0; }
+    .section-kicker { color: var(--blue); margin: 0 0 5px; font-size: 12px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    h2 { margin: 0; font-size: clamp(29px, 4vw, 42px); line-height: 1.15; letter-spacing: -.04em; }
+    .lead { max-width: 760px; color: var(--muted); margin: 13px 0 28px; font-size: 17px; }
+
+    .architecture-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    .architecture-card { width: 100%; padding: 21px 19px; min-height: 202px; appearance: none; cursor: pointer; color: inherit; text-align: left; font: inherit; background: var(--white); border: 1px solid var(--line); border-radius: 17px; box-shadow: 0 7px 20px rgba(29,55,91,.04); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+    .architecture-card:hover { transform: translateY(-4px); border-color: #a7c5ee; box-shadow: 0 13px 27px rgba(29,55,91,.10); }
+    .architecture-card[aria-selected="true"] { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12), 0 13px 27px rgba(29,55,91,.10); }
+    .architecture-card:focus-visible, .method-tab:focus-visible { outline: 3px solid #9dc2ff; outline-offset: 3px; }
+    .architecture-card h3 { display: flex; align-items: center; gap: 9px; margin: 0 0 9px; font-size: 19px; letter-spacing: -.025em; }
+    .architecture-card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .architecture-card .tag { display: inline-block; margin-top: 15px; padding: 4px 8px; border-radius: 7px; font-size: 12px; font-weight: 800; }
+    .icon { width: 29px; height: 29px; display: grid; place-items: center; border-radius: 8px; font-size: 14px; }
+    .soap .icon, .soap .tag { color: #a0440c; background: #fff0e6; } .rest .icon, .rest .tag { color: #106b58; background: #e2f8f2; }
+    .graphql .icon, .graphql .tag { color: #a02c84; background: #feeaf8; } .grpc .icon, .grpc .tag { color: #6044d2; background: #efeaff; }
+    .card-cta { display: block; margin-top: 10px; color: var(--blue); font-size: 12px; font-weight: 800; }
+    .architecture-detail { margin-top: 18px; overflow: hidden; border: 1px solid #cfddeb; border-radius: var(--radius); background: linear-gradient(125deg, #f1f7ff, #fff); box-shadow: var(--shadow); }
+    .detail-inner { padding: 30px; display: grid; grid-template-columns: .72fr 1.28fr; gap: 30px; align-items: start; }
+    .detail-label { display: inline-flex; padding: 5px 9px; border-radius: 7px; color: #135caa; background: #e6f2ff; font-size: 11px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+    .detail-title { margin: 10px 0 9px; font-size: 31px; line-height: 1; letter-spacing: -.045em; }.detail-summary { margin: 0; color: var(--muted); }
+    .detail-facts { margin: 0; padding: 0; display: grid; gap: 11px; list-style: none; }.detail-facts li { padding: 12px 14px; border-left: 3px solid var(--blue); border-radius: 0 10px 10px 0; background: rgba(255,255,255,.76); color: #40546e; font-size: 13px; }.detail-facts b { color: var(--ink); }
+    .detail-code { margin-top: 17px; }.detail-code pre { margin: 8px 0 0; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 11px 16px; margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+    .legend b { color: var(--ink); }
+    .table-shell { overflow-x: auto; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    table { width: 100%; min-width: 1020px; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 17px 16px; vertical-align: top; text-align: left; border-bottom: 1px solid var(--line); }
+    thead th { color: white; background: var(--navy); font-size: 14px; }
+    thead th:first-child { min-width: 170px; border-radius: 20px 0 0 0; }
+    thead th:last-child { border-radius: 0 20px 0 0; }
+    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) { background: #fbfcfe; }
+    tbody th { width: 170px; color: #32455f; font-size: 13px; }
+    td strong { display: block; margin-bottom: 3px; color: #20344e; font-size: 13px; }
+    td small { display: block; color: var(--muted); line-height: 1.45; }
+    .score { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 5px; color: #25405e; font-size: 12px; font-weight: 800; }
+    .dots { display: inline-flex; gap: 2px; }
+    .dots i { width: 7px; height: 7px; display: block; border-radius: 50%; background: #d7e0ec; }
+    .dots i.on { background: var(--blue); }
+
+    .decision { display: grid; grid-template-columns: .88fr 1.12fr; overflow: hidden; border-radius: var(--radius); background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .decision-banner { padding: 38px; color: white; background: linear-gradient(145deg, #0d4d62 0%, #117c79 58%, #139d86 100%); }
+    .decision-banner .choice-label { margin: 0; font-size: 12px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; color: #c7fff2; }
+    .decision-banner h3 { margin: 10px 0 13px; font-size: clamp(32px, 4vw, 50px); line-height: 1; letter-spacing: -.055em; }
+    .decision-banner p { margin: 0; color: #d8fff6; }
+    .decision-banner .mini-stat { margin-top: 30px; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid rgba(255,255,255,.23); }
+    .mini-stat b { display: block; font-size: 19px; } .mini-stat span { font-size: 12px; color: #bfe9df; }
+    .decision-detail { padding: 33px 36px; }
+    .decision-detail h3 { margin: 0 0 8px; font-size: 23px; letter-spacing: -.03em; }
+    .decision-detail > p { margin: 0; color: var(--muted); }
+    .reasons { margin: 22px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .reasons li { position: relative; padding: 13px 13px 13px 40px; background: #f3fbf9; border: 1px solid #d9f2eb; border-radius: 12px; font-size: 13px; }
+    .reasons li::before { content: "✓"; position: absolute; left: 13px; top: 12px; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: var(--teal); color: white; font-size: 11px; font-weight: 900; }
+    .tradeoff { margin: 18px 0 0; padding: 12px 14px; border-left: 3px solid var(--gold); border-radius: 0 10px 10px 0; background: #fff9ed; color: #74541b; font-size: 13px; }
+
+    .demo-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; align-items: start; }
+    .flow-card, .code-card { padding: 26px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .flow-card h3, .code-card h3 { margin: 0 0 4px; font-size: 21px; letter-spacing: -.03em; }
+    .card-subtitle { margin: 0 0 22px; color: var(--muted); font-size: 14px; }
+    .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: center; gap: 8px; }
+    .flow-step { min-height: 130px; padding: 15px 10px; display: grid; align-content: center; justify-items: center; text-align: center; border: 1px solid var(--line); border-radius: 14px; }
+    .flow-step svg { width: 28px; height: 28px; margin-bottom: 6px; color: var(--blue); }
+    .flow-step b { font-size: 13px; } .flow-step span { color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .flow-arrow { color: #8aa2bd; font-weight: 900; }
+    .simulate { appearance: none; cursor: pointer; margin-top: 20px; padding: 11px 15px; border: 0; border-radius: 10px; color: white; background: var(--blue); box-shadow: 0 8px 16px rgba(37,99,235,.22); font: inherit; font-size: 13px; font-weight: 800; }
+    .simulate:hover { background: #1d4ed8; } .simulate:focus-visible { outline: 3px solid #9dc2ff; outline-offset: 3px; }
+    .flow-status { margin-left: 11px; color: var(--muted); font-size: 12px; }
+    .flow-step.active { border-color: #79a7ff; background: #eff5ff; box-shadow: 0 0 0 3px rgba(37,99,235,.09); transform: translateY(-2px); transition: .22s ease; }
+    .code-label { display: inline-block; margin-bottom: 8px; padding: 4px 8px; border-radius: 6px; color: #065d6f; background: #e0f7fa; font-size: 11px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+    pre { overflow-x: auto; margin: 0 0 18px; padding: 16px; border-radius: 13px; color: #dbeaff; background: #101d30; font: 12px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .t-blue { color: #80caff; } .t-gold { color: #ffd166; } .t-green { color: #7ee8b5; } .t-purple { color: #d7b6ff; }
+    .explain { margin: 0; padding: 13px; border-radius: 11px; background: #f5f8fc; color: var(--muted); font-size: 13px; }
+    .explain b { color: var(--ink); }
+
+    .methods-layout { display: grid; grid-template-columns: 250px 1fr; gap: 18px; align-items: stretch; }
+    .method-tabs { display: grid; gap: 9px; align-content: start; }
+    .method-tab { appearance: none; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; padding: 13px 14px; color: #314760; text-align: left; font: inherit; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
+    .method-tab strong { color: var(--blue); font-size: 13px; }.method-tab span { color: var(--muted); font-size: 12px; }.method-tab[aria-selected="true"] { color: white; background: var(--navy); border-color: var(--navy); }.method-tab[aria-selected="true"] strong, .method-tab[aria-selected="true"] span { color: white; }
+    .method-panel { min-height: 350px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); box-shadow: var(--shadow); }.method-panel h3 { margin: 0 0 5px; font-size: 24px; letter-spacing: -.035em; }.method-panel > p { margin: 0 0 18px; color: var(--muted); }
+    .method-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }.method-meta span { padding: 4px 8px; color: #31506f; background: #edf4fb; border-radius: 7px; font-size: 12px; font-weight: 700; }
+
+    .diagram-wrap { padding: 30px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: radial-gradient(circle at 11% 15%, #e8f7ff 0, rgba(232,247,255,0) 30%), var(--white); box-shadow: var(--shadow); }
+    .architecture-diagram { position: relative; display: grid; grid-template-columns: 1fr 46px 1fr 46px 1fr 46px 1fr; align-items: center; min-width: 830px; }
+    .diagram-box { position: relative; z-index: 1; min-height: 145px; padding: 20px 16px; display: grid; align-content: center; border: 1px solid #ccdbea; border-radius: 16px; text-align: center; background: white; box-shadow: 0 9px 20px rgba(42,74,112,.07); }
+    .diagram-box .diagram-icon { margin: 0 auto 7px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; color: #1769aa; background: #e7f3ff; }
+    .diagram-box b { font-size: 14px; }.diagram-box span { color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .diagram-box.api-box { border-color: #87b3ff; background: #f4f8ff; }.diagram-box.db-box { border-color: #a3dbc9; background: #f3fffb; }
+    .diagram-link { height: 2px; position: relative; background: #9ab3ce; }.diagram-link::after { content: "›"; position: absolute; top: -15px; right: -2px; color: #5780ab; font-size: 29px; }
+    .diagram-caption { margin: 15px 0 0; color: var(--muted); text-align: center; font-size: 13px; }
+
+    .comparison-note { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .note { padding: 17px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); }.note b { display: block; margin-bottom: 4px; font-size: 13px; }.note p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    .references { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .reference { display: flex; gap: 13px; padding: 17px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); text-decoration: none; transition: .2s ease; }.reference:hover { transform: translateY(-2px); border-color: #aabfdd; box-shadow: 0 9px 19px rgba(44,72,103,.08); }
+    .ref-number { flex: 0 0 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: white; background: var(--navy); font-size: 12px; font-weight: 850; }.reference b { display: block; font-size: 14px; }.reference span { display: block; color: var(--muted); font-size: 12px; }
+    footer { padding: 26px 0 34px; color: #738299; background: #edf2f8; font-size: 13px; }.footer-content { display: flex; justify-content: space-between; gap: 20px; }.footer-content strong { color: #32455f; }
+
+    @media (max-width: 900px) { .hero-grid, .decision, .demo-grid, .detail-inner, .methods-layout { grid-template-columns: 1fr; }.hero-art { display: none; }.architecture-cards { grid-template-columns: repeat(2, 1fr); }.decision-banner { padding: 31px; }.architecture-diagram { min-width: 760px; }.diagram-wrap { overflow-x: auto; }.nav-links a:nth-child(n+3) { display: none; } }
+    @media (max-width: 610px) { .container { width: min(100% - 30px, 1160px); }.nav { min-height: 59px; }.nav-links a { display: none; }.hero { padding: 57px 0 43px; }.hero p { font-size: 16px; }.architecture-cards, .references, .reasons, .comparison-note { grid-template-columns: 1fr; }.flow { grid-template-columns: 1fr; }.flow-arrow { transform: rotate(90deg); margin: -6px auto; }.flow-step { min-height: 80px; }.flow-step svg { margin-bottom: 2px; }.flow-step span { display: none; }.flow-card, .code-card, .decision-detail, .method-panel, .detail-inner { padding: 23px 19px; } main { padding-top: 43px; }.section { margin-top: 58px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="container nav" aria-label="Điều hướng trang">
+      <a class="brand" href="#top"><span class="brand-mark">↔</span> API Architecture Lab</a>
+      <div class="nav-links">
+        <a href="#comparison">So sánh</a>
+        <a href="#choice">Lựa chọn</a>
+        <a href="#methods">HTTP methods</a>
+        <a href="#demo">Minh hoạ</a>
+        <a href="#sources">Nguồn</a>
+      </div>
+    </nav>
+  </header>
+
+  <section id="top" class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">Team assignment · API design</span>
+        <h1>So sánh các kiến trúc API thông dụng</h1>
+        <p>Phân tích SOAP, REST, GraphQL và gRPC theo các tiêu chí kỹ thuật quan trọng; sau đó chọn giải pháp phù hợp cho hệ thống quản lý sinh viên.</p>
+        <div class="hero-meta">
+          <span>04 kiến trúc</span><span>10 tiêu chí</span><span>01 tình huống thực tế</span><span>01 luồng API</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Bốn kiến trúc API xoay quanh API">
+        <div class="api-orbit">
+          <div class="api-center">API<br>Design</div>
+          <div class="orbit-node n1">SOAP</div><div class="orbit-node n2">REST</div><div class="orbit-node n3">GraphQL</div><div class="orbit-node n4">gRPC</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="section" aria-labelledby="overview-heading">
+      <p class="section-kicker">01 · Bức tranh tổng quan</p>
+      <h2 id="overview-heading">Bốn cách tổ chức giao tiếp, bốn ưu tiên khác nhau</h2>
+      <p class="lead">Không có kiến trúc nào tốt nhất trong mọi bối cảnh. Điểm xuất phát là hiểu mô hình giao tiếp, ràng buộc hợp đồng và nhu cầu của hệ thống. <b>Nhấn vào một thẻ để xem giải thích chi tiết.</b></p>
+      <div class="architecture-cards" role="tablist" aria-label="Chọn kiến trúc API để xem chi tiết">
+        <button class="architecture-card soap" type="button" role="tab" aria-selected="true" aria-controls="architecture-detail" data-architecture="soap"><h3><span class="icon">✦</span>SOAP</h3><p>Giao thức nhắn tin chuẩn hoá, dùng XML Envelope và hợp đồng WSDL; mạnh ở môi trường doanh nghiệp có yêu cầu chặt chẽ.</p><span class="tag">Protocol + contract</span><span class="card-cta">Xem chi tiết →</span></button>
+        <button class="architecture-card rest" type="button" role="tab" aria-selected="false" aria-controls="architecture-detail" data-architecture="rest"><h3><span class="icon">↗</span>REST API</h3><p>Phong cách kiến trúc hướng tài nguyên. Khai thác ngữ nghĩa HTTP, URI và các phương thức như GET, POST, PUT, DELETE.</p><span class="tag">Resource-oriented</span><span class="card-cta">Xem chi tiết →</span></button>
+        <button class="architecture-card graphql" type="button" role="tab" aria-selected="false" aria-controls="architecture-detail" data-architecture="graphql"><h3><span class="icon">⌘</span>GraphQL</h3><p>Ngôn ngữ truy vấn và runtime có schema kiểu mạnh, để client yêu cầu chính xác các trường dữ liệu cần dùng.</p><span class="tag">Client-shaped data</span><span class="card-cta">Xem chi tiết →</span></button>
+        <button class="architecture-card grpc" type="button" role="tab" aria-selected="false" aria-controls="architecture-detail" data-architecture="grpc"><h3><span class="icon">⇄</span>gRPC</h3><p>Khung gọi thủ tục từ xa (RPC) dựa trên service/method; thường dùng Protocol Buffers và HTTP/2 để giao tiếp hiệu quả.</p><span class="tag">High-performance RPC</span><span class="card-cta">Xem chi tiết →</span></button>
+      </div>
+      <article class="architecture-detail" id="architecture-detail" role="tabpanel" aria-live="polite">
+        <div class="detail-inner">
+          <div>
+            <span class="detail-label" id="detail-kind">Messaging protocol</span>
+            <h3 class="detail-title" id="detail-title">SOAP là gì?</h3>
+            <p class="detail-summary" id="detail-summary">SOAP (Simple Object Access Protocol) là một giao thức nhắn tin để trao đổi thông tin có cấu trúc giữa các hệ thống phân tán.</p>
+          </div>
+          <div>
+            <ul class="detail-facts" id="detail-facts"></ul>
+            <div class="detail-code"><span class="code-label" id="detail-code-label">SOAP message</span><pre id="detail-code"></pre></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section id="comparison" class="section" aria-labelledby="comparison-heading">
+      <p class="section-kicker">02 · So sánh chi tiết</p>
+      <h2 id="comparison-heading">Ma trận 10 tiêu chí</h2>
+      <p class="lead">Bảng dưới đây phân biệt rõ “protocol”, “architectural style”, “query language” và “RPC framework” - những khái niệm thường bị gọi chung là “API architecture”.</p>
+      <div class="legend"><span><b>Điểm hiệu năng:</b> tương đối trong bối cảnh điển hình</span><span><b>Lưu ý:</b> kết quả thực tế còn phụ thuộc triển khai, mạng và dữ liệu.</span></div>
+      <div class="table-shell" role="region" aria-label="Bảng so sánh các kiến trúc API" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Tiêu chí</th><th scope="col">SOAP</th><th scope="col">REST API</th><th scope="col">GraphQL</th><th scope="col">gRPC</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">1. Bản chất / mô hình</th><td><strong>Giao thức nhắn tin</strong><small>Chuẩn hoá message exchange qua SOAP Envelope.</small></td><td><strong>Phong cách kiến trúc</strong><small>Tài nguyên được biểu diễn qua URI và representation.</small></td><td><strong>Ngôn ngữ truy vấn + runtime</strong><small>Client mô tả cấu trúc dữ liệu cần lấy từ schema.</small></td><td><strong>RPC framework</strong><small>Client gọi method từ xa như một lời gọi cục bộ.</small></td></tr>
+            <tr><th scope="row">2. Transport / protocol</th><td><strong>Transport-agnostic</strong><small>Thường chạy trên HTTP/HTTPS; cũng có thể dùng transport khác.</small></td><td><strong>HTTP/HTTPS</strong><small>Dùng URI, HTTP method, status code và header.</small></td><td><strong>Thường là HTTP</strong><small>Một endpoint (thường /graphql); subscription có thể dùng transport khác.</small></td><td><strong>HTTP/2</strong><small>Multiplexing, streaming và header compression là lợi thế chính.</small></td></tr>
+            <tr><th scope="row">3. Dữ liệu &amp; hợp đồng</th><td><strong>XML + WSDL/XSD</strong><small>Envelope, Header, Body; contract chặt chẽ, verbose.</small></td><td><strong>Thường JSON + OpenAPI</strong><small>Không bắt buộc một format hay contract cụ thể.</small></td><td><strong>JSON + GraphQL schema</strong><small>Schema type mạnh; query nêu rõ selection set.</small></td><td><strong>Protocol Buffers + .proto</strong><small>Binary nhỏ gọn; sinh client/server stub từ IDL.</small></td></tr>
+            <tr><th scope="row">4. Interface / endpoint</th><td><strong>Operation-oriented</strong><small>Gọi operation được định nghĩa trong service contract.</small></td><td><strong>Resource-oriented</strong><small>Nhiều endpoint: /students, /courses, /enrollments.</small></td><td><strong>Single graph endpoint</strong><small>Query, mutation (và có thể subscription) vào /graphql.</small></td><td><strong>Service + method</strong><small>Ví dụ StudentService/GetStudent theo .proto.</small></td></tr>
+            <tr><th scope="row">5. Hiệu năng &amp; streaming</th><td><span class="score">Trung bình <span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></span><small>XML khá nặng; không tối ưu cho low-latency nội bộ.</small></td><td><span class="score">Khá <span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span><small>Đơn giản, dễ cache; HTTP streaming tuỳ thiết kế.</small></td><td><span class="score">Khá <span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span><small>Giảm over-fetch; resolver/N+1 có thể làm chậm nếu thiết kế kém.</small></td><td><span class="score">Rất cao <span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span><small>Protobuf + HTTP/2; hỗ trợ unary và 3 kiểu streaming.</small></td></tr>
+            <tr><th scope="row">6. Linh hoạt lấy dữ liệu</th><td><strong>Thấp - vừa</strong><small>Payload thiên về operation đã định nghĩa trước.</small></td><td><strong>Vừa</strong><small>Client theo representation server cung cấp; có thể over/under-fetch.</small></td><td><strong>Rất cao</strong><small>Client chọn trường cần thiết, gộp related data trong một query.</small></td><td><strong>Thấp - vừa</strong><small>Method/message được xác định rõ trong proto contract.</small></td></tr>
+            <tr><th scope="row">7. Caching &amp; versioning</th><td><strong>Khó hơn</strong><small>Caching cần thiết kế riêng; contract thay đổi thận trọng.</small></td><td><strong>Tốt với HTTP</strong><small>GET/Cache-Control/ETag hỗ trợ caching chuẩn; version thường ở URL/header.</small></td><td><strong>Cần chiến lược riêng</strong><small>Client cache/normalized cache phổ biến; schema evolution thay version URL.</small></td><td><strong>Cần kỷ luật schema</strong><small>Field number phải ổn định; Protobuf hỗ trợ evolution nếu tuân thủ quy tắc.</small></td></tr>
+            <tr><th scope="row">8. Bảo mật &amp; governance</th><td><strong>Enterprise-focused</strong><small>Phù hợp WS-Security, policy và hợp đồng chuẩn hoá trong nhiều enterprise stack.</small></td><td><strong>Phổ biến, dễ áp dụng</strong><small>HTTPS, OAuth2/OIDC, JWT và RBAC qua middleware/gateway.</small></td><td><strong>Cần kiểm soát query</strong><small>Phải áp quyền theo resolver/field và giới hạn depth, complexity.</small></td><td><strong>Phù hợp service nội bộ</strong><small>TLS/mTLS, deadline và metadata; cần công cụ observability tốt.</small></td></tr>
+            <tr><th scope="row">9. Độ phức tạp &amp; tooling</th><td><strong>Cao</strong><small>XML, WSDL và SOAP extensions tạo độ dốc học tập lớn.</small></td><td><strong>Thấp - vừa</strong><small>Tooling web rất rộng: browser, curl, Postman, OpenAPI.</small></td><td><strong>Vừa - cao</strong><small>Cần schema, resolver, query governance và cache strategy.</small></td><td><strong>Vừa - cao</strong><small>Cần code generation, proto discipline và hỗ trợ browser hạn chế hơn.</small></td></tr>
+            <tr><th scope="row">10. Điểm mạnh / giới hạn / use case</th><td><strong>Chuẩn hoá, contract mạnh</strong><small>Hợp tích hợp legacy, B2B, enterprise; đổi lại là verbose và phức tạp.</small></td><td><strong>Đơn giản, tương thích rộng</strong><small>Hợp public API, web/mobile CRUD; có thể nhiều round-trip hoặc dư/thiếu dữ liệu.</small></td><td><strong>Đúng dữ liệu client cần</strong><small>Hợp nhiều client/UI phức tạp; tránh lộ chi phí query và thiết kế resolver cẩn thận.</small></td><td><strong>Nhanh, typed, streaming</strong><small>Hợp microservices/internal systems; browser/public API thường cần gRPC-Web/gateway.</small></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="choice" class="section" aria-labelledby="choice-heading">
+      <p class="section-kicker">03 · Lựa chọn kiến trúc</p>
+      <h2 id="choice-heading">REST cho hệ thống quản lý sinh viên</h2>
+      <p class="lead">Chọn REST làm API chính cho cổng thông tin sinh viên, ứng dụng giảng viên và bộ phận quản trị.</p>
+      <div class="decision">
+        <div class="decision-banner">
+          <p class="choice-label">Recommended primary API</p>
+          <h3>REST<br>API</h3>
+          <p>Một lựa chọn cân bằng giữa tính dễ dùng, tương thích đa nền tảng và chi phí vận hành cho luồng CRUD của nhà trường.</p>
+          <div class="mini-stat"><div><b>HTTP + JSON</b><span>Dễ tiếp cận cho web &amp; mobile</span></div><div><b>Resource model</b><span>Khớp với students, courses, enrollments</span></div></div>
+        </div>
+        <div class="decision-detail">
+          <h3>Vì sao phù hợp?</h3>
+          <p>Hệ thống có các thực thể rõ ràng: <b>sinh viên</b>, <b>môn học</b>, <b>lớp học phần</b>, <b>đăng ký</b> và <b>điểm</b>. REST biểu diễn tự nhiên các thực thể đó thành tài nguyên và ánh xạ thao tác nghiệp vụ vào HTTP.</p>
+          <ul class="reasons">
+            <li><b>CRUD rõ ràng:</b> GET /students, POST /enrollments, PATCH /students/{id} dễ đọc và nhất quán.</li>
+            <li><b>Phủ rộng client:</b> Browser, mobile app và công cụ quản trị đều làm việc tốt với HTTP/JSON.</li>
+            <li><b>Dễ bảo trì:</b> OpenAPI, logging, API gateway, caching và monitoring có hệ sinh thái rất trưởng thành.</li>
+            <li><b>Mở rộng hợp lý:</b> Stateless request hỗ trợ scale ngang; ETag/Cache-Control có ích với catalogue môn học.</li>
+          </ul>
+          <p class="tradeoff"><b>Quyết định có điều kiện:</b> REST là API chính cho client. Nếu sau này có báo cáo dashboard cần nhiều dữ liệu liên kết, có thể bổ sung GraphQL ở BFF; các dịch vụ nội bộ cần độ trễ thấp có thể giao tiếp gRPC. Đây là kiến trúc lai bổ sung, không phủ định lựa chọn REST.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="methods" class="section" aria-labelledby="methods-heading">
+      <p class="section-kicker">04 · Cách gọi API methods</p>
+      <h2 id="methods-heading">Gọi các phương thức HTTP trong REST</h2>
+      <p class="lead">Với REST, method thể hiện <i>ý định</i> thao tác lên resource. Chọn từng method để xem endpoint, header và ví dụ request/response dành cho Student Management System.</p>
+      <div class="methods-layout">
+        <div class="method-tabs" role="tablist" aria-label="Các HTTP method">
+          <button class="method-tab" type="button" role="tab" aria-selected="true" aria-controls="method-panel" data-method="get"><strong>GET</strong><span>Đọc dữ liệu</span></button>
+          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="post"><strong>POST</strong><span>Tạo resource</span></button>
+          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="put"><strong>PUT</strong><span>Thay thế toàn bộ</span></button>
+          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="patch"><strong>PATCH</strong><span>Cập nhật một phần</span></button>
+          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="delete"><strong>DELETE</strong><span>Xoá resource</span></button>
+        </div>
+        <article class="method-panel" id="method-panel" role="tabpanel" aria-live="polite">
+          <span class="detail-label" id="method-label">Read resource</span>
+          <h3 id="method-title">GET - đọc hồ sơ sinh viên</h3>
+          <p id="method-description">Dùng GET khi client muốn lấy dữ liệu mà không tạo hay làm thay đổi resource trên server. GET là safe và idempotent; có thể tận dụng HTTP caching khi chính sách dữ liệu cho phép.</p>
+          <div class="method-meta" id="method-meta"><span>Safe</span><span>Idempotent</span><span>200 OK</span></div>
+          <span class="code-label" id="method-code-label">Example request</span>
+          <pre id="method-code"></pre>
+          <p class="explain" id="method-note"></p>
+        </article>
+      </div>
+    </section>
+
+    <section id="demo" class="section" aria-labelledby="demo-heading">
+      <p class="section-kicker">05 · Simple API demonstration</p>
+      <h2 id="demo-heading">Client → Request → API → Response</h2>
+      <p class="lead">Ví dụ: sinh viên đăng nhập cổng thông tin và xem hồ sơ của mình. Đây là minh hoạ request/response, không phải ứng dụng hoàn chỉnh.</p>
+      <div class="demo-grid">
+        <article class="flow-card">
+          <h3>Luồng thực thi REST</h3>
+          <p class="card-subtitle">Một request GET được xác thực, xử lý và trả về đúng representation JSON.</p>
+          <div class="flow" aria-label="Client đến response">
+            <div class="flow-step" data-step="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg><b>1. Client</b><span>Student Portal<br>Web / Mobile</span></div><span class="flow-arrow">→</span>
+            <div class="flow-step" data-step="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M15 6l6 6-6 6"/></svg><b>2. Request</b><span>GET /api/v1/<br>students/{id}</span></div><span class="flow-arrow">→</span>
+            <div class="flow-step" data-step="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 20V10m7 10V4m7 16v-7"/><path d="M3 20h18"/></svg><b>3. REST API</b><span>Auth → Controller<br>→ Service → DB</span></div><span class="flow-arrow">→</span>
+            <div class="flow-step" data-step="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3z"/><path d="M8 8h8M8 12h5"/></svg><b>4. Response</b><span>200 OK<br>application/json</span></div>
+          </div>
+          <button class="simulate" id="simulate" type="button">▶ Chạy minh hoạ</button><span class="flow-status" id="flow-status" aria-live="polite">Sẵn sàng.</span>
+        </article>
+        <article class="code-card">
+          <h3>Request &amp; response</h3>
+          <p class="card-subtitle">Endpoint theo version, bearer token và JSON response.</p>
+          <span class="code-label">HTTP Request</span>
+          <pre><span class="t-blue">GET</span> <span class="t-green">/api/v1/students/STU-20260021</span> <span class="t-purple">HTTP/1.1</span>
+Host: api.university.edu.vn
+Authorization: <span class="t-gold">Bearer &lt;access_token&gt;</span>
+Accept: application/json</pre>
+          <span class="code-label">200 OK · application/json</span>
+          <pre>{
+  <span class="t-blue">"id"</span>: <span class="t-green">"STU-20260021"</span>,
+  <span class="t-blue">"fullName"</span>: <span class="t-green">"Nguyễn Minh Anh"</span>,
+  <span class="t-blue">"program"</span>: <span class="t-green">"Kỹ thuật phần mềm"</span>,
+  <span class="t-blue">"year"</span>: <span class="t-gold">2</span>,
+  <span class="t-blue">"status"</span>: <span class="t-green">"active"</span>
+}</pre>
+          <p class="explain"><b>API responsibility:</b> xác thực token; kiểm tra quyền “student:read:self”; lấy dữ liệu từ Student Service/DB; trả status code và representation JSON nhất quán.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="diagram-heading">
+      <p class="section-kicker">06 · Architecture / communication diagram</p>
+      <h2 id="diagram-heading">Luồng thành phần cho Student Management System</h2>
+      <p class="lead">Sơ đồ tập trung vào đường đi của request REST và các ranh giới trách nhiệm chính.</p>
+      <div class="diagram-wrap" role="img" aria-label="Sơ đồ cổng sinh viên gửi HTTPS request tới API gateway, REST API và cơ sở dữ liệu sinh viên">
+        <div class="architecture-diagram">
+          <div class="diagram-box"><div class="diagram-icon">▣</div><b>Student Portal</b><span>Web / Mobile client<br>Hiển thị hồ sơ, lịch học</span></div><div class="diagram-link"></div>
+          <div class="diagram-box"><div class="diagram-icon">⌁</div><b>API Gateway</b><span>HTTPS, rate limit<br>routing, token validation</span></div><div class="diagram-link"></div>
+          <div class="diagram-box api-box"><div class="diagram-icon">{ }</div><b>Student REST API</b><span>Controller → service<br>business rules + RBAC</span></div><div class="diagram-link"></div>
+          <div class="diagram-box db-box"><div class="diagram-icon">▤</div><b>Student Database</b><span>Students, courses<br>enrollments, grades</span></div>
+        </div>
+        <p class="diagram-caption">HTTPS + JSON đi theo chiều phải; JSON response và HTTP status code quay trở lại client theo chiều ngược lại.</p>
+      </div>
+      <div class="comparison-note">
+        <article class="note"><b>Authentication</b><p>Gateway hoặc middleware xác minh access token trước khi controller xử lý request.</p></article>
+        <article class="note"><b>Authorization</b><p>Service áp RBAC: sinh viên chỉ đọc hồ sơ của mình; staff có phạm vi quyền khác.</p></article>
+        <article class="note"><b>Observability</b><p>Gắn request ID, log status/latency và metrics để phát hiện sự cố, không log access token.</p></article>
+      </div>
+    </section>
+
+    <section id="sources" class="section" aria-labelledby="sources-heading">
+      <p class="section-kicker">07 · References</p>
+      <h2 id="sources-heading">Nguồn kỹ thuật chính thức</h2>
+      <p class="lead">Các nhận định về protocol, transport, format và interface trong trang được đối chiếu với tài liệu kỹ thuật bên dưới.</p>
+      <div class="references">
+        <a class="reference" href="https://www.w3.org/TR/soap12/" target="_blank" rel="noopener noreferrer"><span class="ref-number">01</span><span><b>W3C - SOAP Version 1.2</b><span>Messaging Framework: XML-based, extensible framework và SOAP message construct.</span></span></a>
+        <a class="reference" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides" target="_blank" rel="noopener noreferrer"><span class="ref-number">02</span><span><b>MDN - HTTP Guides</b><span>HTTP methods, status codes, headers, caching và các nguyên tắc giao tiếp web.</span></span></a>
+        <a class="reference" href="https://graphql.org/learn/serving-over-http/" target="_blank" rel="noopener noreferrer"><span class="ref-number">03</span><span><b>GraphQL Foundation - Serving over HTTP</b><span>Single endpoint, POST/GET, JSON request/response và GraphQL-over-HTTP guidance.</span></span></a>
+        <a class="reference" href="https://grpc.io/docs/what-is-grpc/introduction/" target="_blank" rel="noopener noreferrer"><span class="ref-number">04</span><span><b>gRPC - Introduction</b><span>Service/method model, Protocol Buffers, generated stubs và cross-language clients.</span></span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="container footer-content"><span><strong>API Architecture Lab</strong> · SOAP vs REST vs GraphQL vs gRPC</span><span>Prepared for team assignment · 2026</span></div></footer>
+
+  <script>
+    const architectureInfo = {
+      soap: {
+        kind: 'Messaging protocol',
+        title: 'SOAP là gì?',
+        summary: 'SOAP (Simple Object Access Protocol) là giao thức nhắn tin dùng để trao đổi dữ liệu có cấu trúc giữa các hệ thống phân tán. Nó ưu tiên sự chuẩn hoá và hợp đồng rõ ràng hơn sự gọn nhẹ.',
+        facts: [
+          '<b>Cấu trúc message:</b> một SOAP message là XML Envelope, bên trong có Header (metadata như security/routing) và Body (payload nghiệp vụ).',
+          '<b>Hợp đồng:</b> WSDL mô tả service, operation và endpoint; XSD định nghĩa kiểu dữ liệu để client/server cùng tuân theo.',
+          '<b>Transport:</b> SOAP không bị buộc vào HTTP, nhưng HTTP/HTTPS là lựa chọn rất phổ biến trong thực tế.',
+          '<b>Nên dùng khi:</b> B2B, tích hợp enterprise/legacy, hoặc nơi cần policy, contract và chuẩn WS-* chặt chẽ.'
+        ],
+        label: 'SOAP message',
+        code: '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">\n  <soap:Header>...</soap:Header>\n  <soap:Body>\n    <GetStudentRequest><studentId>STU-20260021</studentId></GetStudentRequest>\n  </soap:Body>\n</soap:Envelope>'
+      },
+      rest: {
+        kind: 'Architectural style',
+        title: 'REST API là gì?',
+        summary: 'REST là phong cách kiến trúc cho API web. REST tổ chức dữ liệu thành tài nguyên có URI ổn định và dùng HTTP method, header cùng status code để diễn đạt thao tác.',
+        facts: [
+          '<b>Resource:</b> danh từ thay vì động từ: <code>/students</code>, <code>/courses</code>, <code>/enrollments</code>. Representation thường là JSON.',
+          '<b>Uniform interface:</b> cùng một quy tắc HTTP cho mọi resource - GET để đọc, POST để tạo, PATCH/PUT để cập nhật, DELETE để xoá.',
+          '<b>Stateless:</b> mỗi request mang đủ thông tin xác thực và ngữ cảnh cần thiết; server không phụ thuộc session trong request trước.',
+          '<b>Nên dùng khi:</b> public API, web/mobile CRUD, cần tương thích browser và tận dụng công cụ HTTP sẵn có.'
+        ],
+        label: 'REST endpoint',
+        code: 'GET /api/v1/students/STU-20260021 HTTP/1.1\nAuthorization: Bearer <access_token>\nAccept: application/json\n\nHTTP/1.1 200 OK\nContent-Type: application/json\n\n{ "id": "STU-20260021", "fullName": "Nguyễn Minh Anh" }'
+      },
+      graphql: {
+        kind: 'Query language + runtime',
+        title: 'GraphQL là gì?',
+        summary: 'GraphQL là ngôn ngữ truy vấn cho API và runtime thực thi các truy vấn đó. Client nói chính xác các field cần nhận; server kiểm tra query dựa trên schema kiểu mạnh.',
+        facts: [
+          '<b>Schema-first:</b> type, query, mutation và relationship được mô tả trong GraphQL schema; client có thể introspect schema.',
+          '<b>Selection set:</b> client chỉ yêu cầu dữ liệu cần cho một màn hình, giảm over-fetch và có thể lấy dữ liệu liên quan trong một request.',
+          '<b>Resolver:</b> mỗi field được resolver lấy dữ liệu; cần batching/caching để tránh vấn đề N+1 và giới hạn query depth/complexity.',
+          '<b>Nên dùng khi:</b> UI có nhiều màn hình, nhiều loại client hoặc cần ghép nhiều nguồn dữ liệu thành một graph thống nhất.'
+        ],
+        label: 'GraphQL query',
+        code: 'query StudentProfile($id: ID!) {\n  student(id: $id) {\n    fullName\n    program\n    enrollments { course { code title } }\n  }\n}\n\nvariables: { "id": "STU-20260021" }'
+      },
+      grpc: {
+        kind: 'High-performance RPC framework',
+        title: 'gRPC là gì?',
+        summary: 'gRPC là framework Remote Procedure Call để client gọi method trên server từ xa. Nó thường dùng Protocol Buffers làm IDL và định dạng message binary, sau đó sinh stub client/server.',
+        facts: [
+          '<b>Contract-first:</b> service, RPC method và message được viết trong file <code>.proto</code>; <code>protoc</code> sinh code cho nhiều ngôn ngữ.',
+          '<b>HTTP/2:</b> gRPC khai thác multiplexing, binary framing và streaming (server, client, bidirectional) cho service-to-service.',
+          '<b>Gọi method:</b> client dùng generated stub, ví dụ <code>client.GetStudent(request)</code>, thay vì tự dựng URI/JSON.',
+          '<b>Nên dùng khi:</b> microservices nội bộ, low-latency, streaming hoặc cần contract strongly typed giữa các dịch vụ.'
+        ],
+        label: '.proto contract',
+        code: 'service StudentService {\n  rpc GetStudent (GetStudentRequest) returns (Student);\n}\n\nmessage GetStudentRequest { string id = 1; }\nmessage Student { string id = 1; string full_name = 2; }'
+      }
+    };
+
+    const architectureTabs = [...document.querySelectorAll('[data-architecture]')];
+    const detailKind = document.getElementById('detail-kind');
+    const detailTitle = document.getElementById('detail-title');
+    const detailSummary = document.getElementById('detail-summary');
+    const detailFacts = document.getElementById('detail-facts');
+    const detailCodeLabel = document.getElementById('detail-code-label');
+    const detailCode = document.getElementById('detail-code');
+    function showArchitecture(key) {
+      const info = architectureInfo[key];
+      architectureTabs.forEach(tab => tab.setAttribute('aria-selected', String(tab.dataset.architecture === key)));
+      detailKind.textContent = info.kind;
+      detailTitle.textContent = info.title;
+      detailSummary.textContent = info.summary;
+      detailFacts.innerHTML = info.facts.map(fact => `<li>${fact}</li>`).join('');
+      detailCodeLabel.textContent = info.label;
+      detailCode.textContent = info.code;
+    }
+    architectureTabs.forEach(tab => tab.addEventListener('click', () => showArchitecture(tab.dataset.architecture)));
+    showArchitecture('soap');
+
+    const methodInfo = {
+      get: {
+        label: 'Read resource', title: 'GET - đọc hồ sơ sinh viên',
+        description: 'Dùng GET khi client muốn lấy dữ liệu mà không tạo hay làm thay đổi resource trên server. GET là safe và idempotent; có thể tận dụng HTTP caching khi chính sách dữ liệu cho phép.',
+        meta: ['Safe', 'Idempotent', '200 OK'], codeLabel: 'Example request',
+        code: 'GET /api/v1/students/STU-20260021 HTTP/1.1\nAuthorization: Bearer <access_token>\nAccept: application/json\n\n→ 200 OK\n{ "id": "STU-20260021", "fullName": "Nguyễn Minh Anh" }',
+        note: '<b>Khi nào dùng:</b> mở trang hồ sơ, danh sách môn học hoặc chi tiết lớp. Không dùng GET để thay đổi dữ liệu.'
+      },
+      post: {
+        label: 'Create resource', title: 'POST - tạo đăng ký môn học',
+        description: 'Dùng POST để tạo một resource mới trong collection hoặc thực hiện một action có side effect. Server thường tạo ID và trả về URI resource mới.',
+        meta: ['Not safe', 'Usually not idempotent', '201 Created'], codeLabel: 'Example request',
+        code: 'POST /api/v1/enrollments HTTP/1.1\nAuthorization: Bearer <access_token>\nContent-Type: application/json\n\n{ "studentId": "STU-20260021", "courseId": "SE104" }\n\n→ 201 Created\nLocation: /api/v1/enrollments/ENR-9008',
+        note: '<b>Lưu ý:</b> nếu user bấm gửi lại request, có thể tạo trùng. Dùng idempotency key hoặc kiểm tra business rule khi cần chống duplicate.'
+      },
+      put: {
+        label: 'Replace full resource', title: 'PUT - thay thế toàn bộ hồ sơ',
+        description: 'Dùng PUT khi client gửi representation đầy đủ để thay thế resource tại URI đã biết. Cùng một payload gửi nhiều lần phải cho cùng kết quả cuối cùng.',
+        meta: ['Not safe', 'Idempotent', '200 OK / 204 No Content'], codeLabel: 'Example request',
+        code: 'PUT /api/v1/students/STU-20260021 HTTP/1.1\nAuthorization: Bearer <access_token>\nContent-Type: application/json\n\n{\n  "fullName": "Nguyễn Minh Anh",\n  "email": "minhanh@university.edu.vn",\n  "program": "Kỹ thuật phần mềm",\n  "status": "active"\n}\n\n→ 200 OK',
+        note: '<b>Cẩn thận:</b> payload nên chứa đầy đủ state. Nếu bỏ một field, server cần quy ước rõ là reset, reject hay giữ nguyên.'
+      },
+      patch: {
+        label: 'Partial update', title: 'PATCH - cập nhật một phần hồ sơ',
+        description: 'Dùng PATCH khi chỉ muốn sửa một vài field của resource. Điều này phù hợp với form cập nhật email, số điện thoại hoặc trạng thái mà không phải gửi lại toàn bộ hồ sơ.',
+        meta: ['Not safe', 'May be idempotent', '200 OK / 204 No Content'], codeLabel: 'Example request',
+        code: 'PATCH /api/v1/students/STU-20260021 HTTP/1.1\nAuthorization: Bearer <access_token>\nContent-Type: application/merge-patch+json\n\n{ "email": "minhanh.new@university.edu.vn" }\n\n→ 200 OK',
+        note: '<b>Lưu ý:</b> công bố rõ patch format (JSON Merge Patch hoặc JSON Patch) và validation cho từng field được phép chỉnh sửa.'
+      },
+      delete: {
+        label: 'Remove resource', title: 'DELETE - huỷ một đăng ký',
+        description: 'Dùng DELETE để yêu cầu xoá resource tại URI. Với hệ thống giáo dục, xoá thường là huỷ đăng ký hoặc soft delete để giữ dấu vết nghiệp vụ.',
+        meta: ['Not safe', 'Idempotent by design', '204 No Content'], codeLabel: 'Example request',
+        code: 'DELETE /api/v1/enrollments/ENR-9008 HTTP/1.1\nAuthorization: Bearer <access_token>\n\n→ 204 No Content',
+        note: '<b>Kiểm soát nghiệp vụ:</b> kiểm tra thời hạn huỷ, quyền của người gọi và audit log. Không nhất thiết phải xoá vật lý khỏi database.'
+      }
+    };
+    const methodTabs = [...document.querySelectorAll('[data-method]')];
+    const methodLabel = document.getElementById('method-label');
+    const methodTitle = document.getElementById('method-title');
+    const methodDescription = document.getElementById('method-description');
+    const methodMeta = document.getElementById('method-meta');
+    const methodCodeLabel = document.getElementById('method-code-label');
+    const methodCode = document.getElementById('method-code');
+    const methodNote = document.getElementById('method-note');
+    function showMethod(key) {
+      const info = methodInfo[key];
+      methodTabs.forEach(tab => tab.setAttribute('aria-selected', String(tab.dataset.method === key)));
+      methodLabel.textContent = info.label;
+      methodTitle.textContent = info.title;
+      methodDescription.textContent = info.description;
+      methodMeta.innerHTML = info.meta.map(item => `<span>${item}</span>`).join('');
+      methodCodeLabel.textContent = info.codeLabel;
+      methodCode.textContent = info.code;
+      methodNote.innerHTML = info.note;
+    }
+    methodTabs.forEach(tab => tab.addEventListener('click', () => showMethod(tab.dataset.method)));
+    showMethod('get');
+
+    const button = document.getElementById('simulate');
+    const status = document.getElementById('flow-status');
+    const steps = [...document.querySelectorAll('.flow-step')];
+    let running = false;
+    button.addEventListener('click', async () => {
+      if (running) return;
+      running = true;
+      button.disabled = true;
+      button.style.opacity = '.72';
+      const messages = ['Client khởi tạo GET request...', 'Request mang token tới API...', 'API xác thực, xử lý và truy vấn dữ liệu...', '200 OK: JSON response về client.'];
+      steps.forEach(step => step.classList.remove('active'));
+      for (let i = 0; i < steps.length; i++) {
+        status.textContent = messages[i];
+        steps[i].classList.add('active');
+        await new Promise(resolve => setTimeout(resolve, 650));
+      }
+      status.textContent = 'Hoàn tất: Client nhận student representation.';
+      button.disabled = false;
+      button.style.opacity = '1';
+      running = false;
+    });
+  </script>
+</body>
+</html>
