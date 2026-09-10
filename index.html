@@ -186,7 +186,7 @@
       <div class="nav-links">
         <a href="#comparison">So sánh</a>
         <a href="#choice">Lựa chọn</a>
-        <a href="#methods">HTTP methods</a>
+        <a href="#methods">Cách gọi API</a>
         <a href="#simulator">REST simulator</a>
         <a href="#demo">Minh hoạ</a>
         <a href="#sources">Nguồn</a>
@@ -289,22 +289,21 @@
     </section>
 
     <section id="methods" class="section" aria-labelledby="methods-heading">
-      <p class="section-kicker">04 · Cách gọi API methods</p>
-      <h2 id="methods-heading">Gọi các phương thức HTTP trong REST</h2>
-      <p class="lead">Với REST, method thể hiện <i>ý định</i> thao tác lên resource. Chọn từng method để xem endpoint, header và ví dụ request/response dành cho Student Management System.</p>
+      <p class="section-kicker">04 · Cách gọi của 4 kiến trúc API</p>
+      <h2 id="methods-heading">Bốn cách gửi yêu cầu tới API</h2>
+      <p class="lead">Cùng một mục tiêu “lấy hồ sơ sinh viên”, nhưng SOAP, REST, GraphQL và gRPC có cách gọi khác nhau. Chọn từng kiến trúc để xem request/contract tiêu biểu.</p>
       <div class="methods-layout">
-        <div class="method-tabs" role="tablist" aria-label="Các HTTP method">
-          <button class="method-tab" type="button" role="tab" aria-selected="true" aria-controls="method-panel" data-method="get"><strong>GET</strong><span>Đọc dữ liệu</span></button>
-          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="post"><strong>POST</strong><span>Tạo resource</span></button>
-          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="put"><strong>PUT</strong><span>Thay thế toàn bộ</span></button>
-          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="patch"><strong>PATCH</strong><span>Cập nhật một phần</span></button>
-          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="delete"><strong>DELETE</strong><span>Xoá resource</span></button>
+        <div class="method-tabs" role="tablist" aria-label="Cách gọi API của bốn kiến trúc">
+          <button class="method-tab" type="button" role="tab" aria-selected="true" aria-controls="method-panel" data-method="soap"><strong>SOAP</strong><span>XML Envelope + WSDL</span></button>
+          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="rest"><strong>REST API</strong><span>HTTP method + URI</span></button>
+          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="graphql"><strong>GraphQL</strong><span>POST + Query</span></button>
+          <button class="method-tab" type="button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="grpc"><strong>gRPC</strong><span>Generated client stub</span></button>
         </div>
         <article class="method-panel" id="method-panel" role="tabpanel" aria-live="polite">
-          <span class="detail-label" id="method-label">Read resource</span>
-          <h3 id="method-title">GET - đọc hồ sơ sinh viên</h3>
-          <p id="method-description">Dùng GET khi client muốn lấy dữ liệu mà không tạo hay làm thay đổi resource trên server. GET là safe và idempotent; có thể tận dụng HTTP caching khi chính sách dữ liệu cho phép.</p>
-          <div class="method-meta" id="method-meta"><span>Safe</span><span>Idempotent</span><span>200 OK</span></div>
+          <span class="detail-label" id="method-label">Messaging protocol</span>
+          <h3 id="method-title">SOAP - gửi XML Envelope</h3>
+          <p id="method-description">Client tạo SOAP XML Envelope, gửi request tới endpoint dịch vụ và server xử lý operation đã định nghĩa trong WSDL.</p>
+          <div class="method-meta" id="method-meta"><span>POST</span><span>XML Envelope</span><span>WSDL contract</span></div>
           <span class="code-label" id="method-code-label">Example request</span>
           <pre id="method-code"></pre>
           <p class="explain" id="method-note"></p>
@@ -352,17 +351,17 @@ Accept: application/json</pre>
     <section id="simulator" class="section" aria-labelledby="simulator-heading">
       <p class="section-kicker">06 · Trải nghiệm trực tiếp</p>
       <h2 id="simulator-heading">Trình giả lập REST API tương tác</h2>
-      <p class="lead">Mô phỏng request từ Student Portal đến REST API: thử dữ liệu hợp lệ, ETag cache, lỗi quyền truy cập và resource không tồn tại. Hoàn toàn chạy trong trình duyệt, không gửi dữ liệu ra bên ngoài.</p>
+      <p class="lead">Mô phỏng request từ Student Portal đến REST API bằng dữ liệu của các thành viên nhóm: thử các hồ sơ khác nhau và cơ chế ETag cache. Hoàn toàn chạy trong trình duyệt, không gửi dữ liệu ra bên ngoài.</p>
       <article class="simulator">
         <div class="sim-top"><div><h3>REST API Playground</h3><p>Student Management System · GET enrollment records</p></div><span class="sim-live"><i></i> Local simulation</span></div>
         <div class="sim-body">
           <div class="sim-toolbar">
             <div class="sim-method">GET</div>
-            <input class="sim-url" id="sim-url" aria-label="API endpoint" value="/api/v1/students/STU-20260021/enrollments?term=FA26" spellcheck="false">
+            <input class="sim-url" id="sim-url" aria-label="API endpoint" value="/api/v1/students/SS180069/enrollments?term=FA26" spellcheck="false">
             <button class="sim-send" id="sim-send" type="button">Gửi request ▶</button>
           </div>
           <div class="sim-controls">
-            <div class="sim-field"><label for="sim-student">Mã sinh viên</label><select class="sim-select" id="sim-student"><option value="STU-20260021">STU-20260021 · Nguyễn Minh Anh</option><option value="STU-20260058">STU-20260058 · Trần Gia Hân</option><option value="STU-20260000">STU-20260000 · Không có quyền</option><option value="STU-20269999">STU-20269999 · Không tồn tại</option></select></div>
+            <div class="sim-field"><label for="sim-student">Thành viên nhóm</label><select class="sim-select" id="sim-student"><option value="SS180069">Đặng Thành Hưng · SS180069 · Leader</option><option value="SE182422">Văn Châu Trường Thuận · SE182422</option><option value="SE182173">Nguyễn Bình Minh · SE182173</option><option value="SE182141">Võ Nhật Thiên · SE182141</option></select></div>
             <div class="sim-field"><label for="sim-term">Học kỳ</label><select class="sim-select" id="sim-term"><option value="FA26">FA26 · Fall 2026</option><option value="SP26">SP26 · Spring 2026</option></select></div>
             <div class="sim-field"><label for="sim-etag">Header If-None-Match (ETag)</label><select class="sim-select" id="sim-etag"><option value="">Không gửi · mong đợi 200 OK</option><option value="current">ETag hiện tại · nhận 304 Not Modified</option><option value="stale">ETag cũ · nhận 200 OK</option></select></div>
           </div>
@@ -487,40 +486,33 @@ Accept: application/json</pre>
     showArchitecture('soap');
 
     const methodInfo = {
-      get: {
-        label: 'Read resource', title: 'GET - đọc hồ sơ sinh viên',
-        description: 'Dùng GET khi client muốn lấy dữ liệu mà không tạo hay làm thay đổi resource trên server. GET là safe và idempotent; có thể tận dụng HTTP caching khi chính sách dữ liệu cho phép.',
-        meta: ['Safe', 'Idempotent', '200 OK'], codeLabel: 'Example request',
-        code: 'GET /api/v1/students/STU-20260021 HTTP/1.1\nAuthorization: Bearer <access_token>\nAccept: application/json\n\n→ 200 OK\n{ "id": "STU-20260021", "fullName": "Nguyễn Minh Anh" }',
-        note: '<b>Khi nào dùng:</b> mở trang hồ sơ, danh sách môn học hoặc chi tiết lớp. Không dùng GET để thay đổi dữ liệu.'
+      soap: {
+        label: 'SOAP messaging protocol', title: 'SOAP - gửi XML Envelope',
+        description: 'Client đóng gói lời gọi operation trong SOAP Envelope XML, thường gửi bằng HTTP POST. WSDL cho hai bên biết chính xác operation và kiểu dữ liệu được chấp nhận.',
+        meta: ['HTTP POST', 'XML Envelope', 'WSDL contract'], codeLabel: 'SOAP request',
+        code: 'POST /StudentService HTTP/1.1\nContent-Type: application/soap+xml\nSOAPAction: "GetStudent"\n\n<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">\n  <soap:Body><GetStudentRequest><studentId>SS180069</studentId></GetStudentRequest></soap:Body>\n</soap:Envelope>',
+        note: '<b>Cách gọi:</b> gửi operation <code>GetStudent</code> bên trong XML. Server trả SOAP Envelope XML; contract WSDL quy định message hợp lệ.'
       },
-      post: {
-        label: 'Create resource', title: 'POST - tạo đăng ký môn học',
-        description: 'Dùng POST để tạo một resource mới trong collection hoặc thực hiện một action có side effect. Server thường tạo ID và trả về URI resource mới.',
-        meta: ['Not safe', 'Usually not idempotent', '201 Created'], codeLabel: 'Example request',
-        code: 'POST /api/v1/enrollments HTTP/1.1\nAuthorization: Bearer <access_token>\nContent-Type: application/json\n\n{ "studentId": "STU-20260021", "courseId": "SE104" }\n\n→ 201 Created\nLocation: /api/v1/enrollments/ENR-9008',
-        note: '<b>Lưu ý:</b> nếu user bấm gửi lại request, có thể tạo trùng. Dùng idempotency key hoặc kiểm tra business rule khi cần chống duplicate.'
+      rest: {
+        label: 'Resource-oriented HTTP API', title: 'REST API - gọi resource bằng HTTP',
+        description: 'Client gọi URI đại diện cho resource và dùng HTTP method để biểu đạt ý định. Ví dụ bên dưới dùng GET; REST cũng dùng POST, PUT/PATCH và DELETE cho các thao tác CRUD khác.',
+        meta: ['GET', 'URI resource', 'JSON response'], codeLabel: 'REST request',
+        code: 'GET /api/v1/students/SS180069 HTTP/1.1\nHost: api.university.edu.vn\nAuthorization: Bearer <access_token>\nAccept: application/json\n\n→ 200 OK\n{ "id": "SS180069", "fullName": "Đặng Thành Hưng" }',
+        note: '<b>Cách gọi:</b> kết hợp method + URI. GET đọc <code>/students/{id}</code>; POST tạo resource; PATCH cập nhật một phần; DELETE huỷ/xoá resource.'
       },
-      put: {
-        label: 'Replace full resource', title: 'PUT - thay thế toàn bộ hồ sơ',
-        description: 'Dùng PUT khi client gửi representation đầy đủ để thay thế resource tại URI đã biết. Cùng một payload gửi nhiều lần phải cho cùng kết quả cuối cùng.',
-        meta: ['Not safe', 'Idempotent', '200 OK / 204 No Content'], codeLabel: 'Example request',
-        code: 'PUT /api/v1/students/STU-20260021 HTTP/1.1\nAuthorization: Bearer <access_token>\nContent-Type: application/json\n\n{\n  "fullName": "Nguyễn Minh Anh",\n  "email": "minhanh@university.edu.vn",\n  "program": "Kỹ thuật phần mềm",\n  "status": "active"\n}\n\n→ 200 OK',
-        note: '<b>Cẩn thận:</b> payload nên chứa đầy đủ state. Nếu bỏ một field, server cần quy ước rõ là reset, reject hay giữ nguyên.'
+      graphql: {
+        label: 'Query language + runtime', title: 'GraphQL - gửi query đến một endpoint',
+        description: 'Client gửi một GraphQL document đến endpoint thường là /graphql. Selection set cho server biết chính xác những field cần trả về.',
+        meta: ['POST /graphql', 'Query + variables', 'Schema validation'], codeLabel: 'GraphQL request',
+        code: 'POST /graphql HTTP/1.1\nContent-Type: application/json\n\n{\n  "query": "query($id: ID!) { student(id: $id) { fullName program } }",\n  "variables": { "id": "SS180069" }\n}\n\n→ { "data": { "student": { "fullName": "Đặng Thành Hưng", "program": "Software Engineering" } } }',
+        note: '<b>Cách gọi:</b> client mô tả data shape trong query, thay vì gọi một URI resource riêng. Server kiểm tra query dựa trên GraphQL schema.'
       },
-      patch: {
-        label: 'Partial update', title: 'PATCH - cập nhật một phần hồ sơ',
-        description: 'Dùng PATCH khi chỉ muốn sửa một vài field của resource. Điều này phù hợp với form cập nhật email, số điện thoại hoặc trạng thái mà không phải gửi lại toàn bộ hồ sơ.',
-        meta: ['Not safe', 'May be idempotent', '200 OK / 204 No Content'], codeLabel: 'Example request',
-        code: 'PATCH /api/v1/students/STU-20260021 HTTP/1.1\nAuthorization: Bearer <access_token>\nContent-Type: application/merge-patch+json\n\n{ "email": "minhanh.new@university.edu.vn" }\n\n→ 200 OK',
-        note: '<b>Lưu ý:</b> công bố rõ patch format (JSON Merge Patch hoặc JSON Patch) và validation cho từng field được phép chỉnh sửa.'
-      },
-      delete: {
-        label: 'Remove resource', title: 'DELETE - huỷ một đăng ký',
-        description: 'Dùng DELETE để yêu cầu xoá resource tại URI. Với hệ thống giáo dục, xoá thường là huỷ đăng ký hoặc soft delete để giữ dấu vết nghiệp vụ.',
-        meta: ['Not safe', 'Idempotent by design', '204 No Content'], codeLabel: 'Example request',
-        code: 'DELETE /api/v1/enrollments/ENR-9008 HTTP/1.1\nAuthorization: Bearer <access_token>\n\n→ 204 No Content',
-        note: '<b>Kiểm soát nghiệp vụ:</b> kiểm tra thời hạn huỷ, quyền của người gọi và audit log. Không nhất thiết phải xoá vật lý khỏi database.'
+      grpc: {
+        label: 'High-performance RPC framework', title: 'gRPC - gọi remote method qua generated stub',
+        description: 'Developer định nghĩa service/method trong file .proto, sau đó tạo client stub. Ứng dụng gọi method trên stub; gRPC tự serialise Protocol Buffers và gửi qua HTTP/2.',
+        meta: ['.proto service', 'HTTP/2', 'Protocol Buffers'], codeLabel: 'gRPC client call',
+        code: '// student.proto\nservice StudentService {\n  rpc GetStudent(GetStudentRequest) returns (Student);\n}\n\n// Client application\nconst response = await client.getStudent({ id: "SS180069" });\nconsole.log(response.fullName); // Đặng Thành Hưng',
+        note: '<b>Cách gọi:</b> không tự dựng URI/JSON trong code ứng dụng. Client gọi RPC method từ generated stub, phù hợp service-to-service và strongly typed contract.'
       }
     };
     const methodTabs = [...document.querySelectorAll('[data-method]')];
@@ -543,11 +535,11 @@ Accept: application/json</pre>
       methodNote.innerHTML = info.note;
     }
     methodTabs.forEach(tab => tab.addEventListener('click', () => showMethod(tab.dataset.method)));
-    showMethod('get');
+    showMethod('soap');
 
     const simulatorData = {
-      'STU-20260021': {
-        name: 'Nguyễn Minh Anh', gpa: 3.46,
+      'SS180069': {
+        name: 'Đặng Thành Hưng', gpa: 3.46,
         FA26: [
           { subjectCode: 'PRN231', title: 'Advanced Application Programming', credits: 3, grade: 8.4, status: 'PASSED' },
           { subjectCode: 'SWD392', title: 'Software Design', credits: 3, grade: 7.9, status: 'PASSED' },
@@ -558,8 +550,8 @@ Accept: application/json</pre>
           { subjectCode: 'MAD101', title: 'Discrete Mathematics', credits: 3, grade: 8.1, status: 'PASSED' }
         ]
       },
-      'STU-20260058': {
-        name: 'Trần Gia Hân', gpa: 3.62,
+      'SE182422': {
+        name: 'Văn Châu Trường Thuận', gpa: 3.62,
         FA26: [
           { subjectCode: 'PRN231', title: 'Advanced Application Programming', credits: 3, grade: 9.0, status: 'PASSED' },
           { subjectCode: 'NWC204', title: 'Network Communication', credits: 3, grade: 8.3, status: 'PASSED' }
@@ -567,6 +559,28 @@ Accept: application/json</pre>
         SP26: [
           { subjectCode: 'CSD201', title: 'Data Structures', credits: 3, grade: 8.8, status: 'PASSED' },
           { subjectCode: 'OSG202', title: 'Operating Systems', credits: 3, grade: 8.4, status: 'PASSED' }
+        ]
+      },
+      'SE182173': {
+        name: 'Nguyễn Bình Minh', gpa: 3.54,
+        FA26: [
+          { subjectCode: 'PRN231', title: 'Advanced Application Programming', credits: 3, grade: 8.6, status: 'PASSED' },
+          { subjectCode: 'SWE201', title: 'Introduction to Software Engineering', credits: 3, grade: 8.0, status: 'PASSED' }
+        ],
+        SP26: [
+          { subjectCode: 'NWC204', title: 'Network Communication', credits: 3, grade: 8.4, status: 'PASSED' },
+          { subjectCode: 'CSD201', title: 'Data Structures', credits: 3, grade: 8.2, status: 'PASSED' }
+        ]
+      },
+      'SE182141': {
+        name: 'Võ Nhật Thiên', gpa: 3.48,
+        FA26: [
+          { subjectCode: 'PRN231', title: 'Advanced Application Programming', credits: 3, grade: 8.2, status: 'PASSED' },
+          { subjectCode: 'SWD392', title: 'Software Design', credits: 3, grade: 8.5, status: 'PASSED' }
+        ],
+        SP26: [
+          { subjectCode: 'PRF192', title: 'Programming Fundamentals', credits: 3, grade: 8.9, status: 'PASSED' },
+          { subjectCode: 'MAD101', title: 'Discrete Mathematics', credits: 3, grade: 8.1, status: 'PASSED' }
         ]
       }
     };
@@ -594,15 +608,7 @@ Accept: application/json</pre>
       let statusClass = 'ok';
       let response = '';
       let note = '';
-      if (studentId === 'STU-20260000') {
-        statusText = '403 Forbidden · 18 ms'; statusClass = 'error';
-        response = JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền xem enrollment của sinh viên này.', requestId: 'req_7f4c1a' } }, null, 2);
-        note = '<b>403 Forbidden:</b> token hợp lệ nhưng policy/RBAC không cho phép đọc resource. Server không nên trả dữ liệu enrollment.';
-      } else if (studentId === 'STU-20269999') {
-        statusText = '404 Not Found · 21 ms'; statusClass = 'error';
-        response = JSON.stringify({ error: { code: 'STUDENT_NOT_FOUND', message: 'Không tìm thấy sinh viên STU-20269999.', requestId: 'req_2bd934' } }, null, 2);
-        note = '<b>404 Not Found:</b> URI hợp lệ nhưng resource không tồn tại. API dùng status code để client xử lý trạng thái hiển thị.';
-      } else if (etagMode === 'current') {
+      if (etagMode === 'current') {
         statusText = '304 Not Modified · 12 ms'; statusClass = 'not-modified';
         response = `HTTP/1.1 304 Not Modified\nETag: ${simVersion}\nCache-Control: private, max-age=60\n\n# Không có response body. Client dùng bản cache sẵn có.`;
         note = '<b>304 Not Modified:</b> ETag client gửi khớp version trên server; body được bỏ qua, tiết kiệm băng thông và thời gian xử lý.';
